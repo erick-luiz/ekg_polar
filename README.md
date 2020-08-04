@@ -7,7 +7,7 @@ JS Polar area chart
 O EKG Polar é uma lib para tornar dinâmica e responsiva a criação do grafo polar. Exemplo: 
 
 
-
+![doc](doc.png)
 
 Esta lib partiu da aplicação criada para gerar imagens para roda Agil, assement criado por Ana G Soares para medir times Ágeis. 
 
