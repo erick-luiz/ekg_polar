@@ -40,55 +40,35 @@
 <body>
 	
 	<br>
-	<canvas id="canvas-show" width="800" ></canvas>
+	<canvas id="canvas-show" width="1200" ></canvas>
 	<canvas id="canvas-out" width="1400" hidden="true"></canvas>
 	<a href="#" id="salvar" class="btn-salvar linkbotao" >Gerar Imagem</a>
 
 	<script>
 
 		let data = [
-			{label: 'Pessoas 1', value:3, colors: ['yellow','#fff','red']},
+			{label: 'Pessoas 1; teste', value:6},
 			{label: 'Pessoas 2', value:2},
-			{label: 'Pessoas 3', value:3, colors: ['yellow','#fff','red']},
+			{label: 'Pessoas 3', value:3, colors: ['green']},
 			{label: 'Pessoas 4', value:2},
+			{label: 'Pessoas 5', value:3},
+			{label: 'Pessoas 6', value:2},
+			{label: 'Pessoas 7', value:3},
+			{label: 'Pessoas 8', value:2},
+			{label: 'Pessoas 9', value:3, colors: ['yellow','#000','red']},
+			{label: 'Pessoas 10; teste', value:2},
+			{label: 'Pessoas 11', value:3, colors: ['yellow','#000','red']},
+			{label: 'Pessoas 12', value:2},
 		]
 
-		let options = {
-			layers: 5,
-		}
+		let options = { layers: 5 }
 
 		let canvasShow = document.querySelector("#canvas-show"); 
 
-		// let canvasOut = document.querySelector("#canvas-out"); 		
-		// var formEditor = document.querySelector("#graph-editor");
-		// obtém o source da imagem
-		//var imgData = canvasOut.toDataURL(); // por padrão, a imagem é PNG
-
-		const { fillGraphData, initConfig, setColors, setLabels } = EkGraph;
-		//setColors(['#FF2321', '#FF2321', '#F7FF3F', '#75EB00', '#75EB00']);
+		const { fillGraphData, initConfig, setColors, drawSlice } = EkGraph;
 		initConfig(canvasShow, data, options);
-		
-		//setLabels(labels);
-		//function draw(canvas, s, blocks){
-		//	initConfig(canvas, data, options);
-			//fillGraphData([1,1,5,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]);
-		//}
+		drawSlice(10, 0);
 
-		let slices = 10;
-		let layers = 5;
-
-		//formEditor.addEventListener("change", function(){
-		//	draw(canvasShow, slices, layers);
-		//});
-		/*/ salva imagem
-		document.getElementById('salvar').addEventListener('click', function(e){
-		    draw(canvasOut, slices, layers);
-		    this.href = canvasOut.toDataURL(); // source
-		    this.download = 'Roda-Agil.png'; // nome da imagem
-		    return false;
-		});*/
-		
-		//draw(canvasShow, slices, layers);
 	</script>
 	
 </body>

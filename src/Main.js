@@ -1,8 +1,9 @@
 let EkGraph = (function(){
 
+    // Chart global configurations
     let _config = {
         layers: 4,
-        centerX: 400,
+        centerX: 0.8125 * 400,
         centerY: 0.8125 * 400,
         sizeControl: (0.065 * 800) / (6 / 5),
         fixAngle: -0.5 * Math.PI,
@@ -15,7 +16,8 @@ let EkGraph = (function(){
         defaultColor: '#fff',
         canvas: null,
         data: [],
-        ray: null
+        ray: null,
+        boldQuarte: true
     }
 
     let _draw = (canvas) => {
@@ -27,26 +29,23 @@ let EkGraph = (function(){
         cx.stroke();
     }
 
-    let _fixData = (data) => {
-        if(data.length < _config.slices) {
-            let newData = new Array(_config.slices).fill(0);
-            data.forEach((item, idx) => {
-                newData[idx] = item;
-            });
-            return newData;
-        }
-        return data;
-    }
-
+    // This method split the label in  each ';' breaking the line in there.
     let _printText = (labels) => {
         labels.split(';').forEach((label, idx) => {
             _config.cx.fillText(label, 0, idx * 25);
         });
     }
 
+    // This calc puts the label in the corret position based in its index
+    let _labelPositionControl = (nSlices) => {
+        let oddPlus = nSlices%2 === 0? 0: 0.5;
+        return Math.round(nSlices / 2) + 1 - oddPlus;
+    }
+
+    // This method will print the labels
     let _drawLabels = (cx, color = '#000') => {
 
-        const  ray  = _config.ray * 1.09;
+        const  ray  = _config.ray * 1.06;
         
         const rotatePercent = 0.5;
         const moveX = 1.33;
@@ -57,8 +56,9 @@ let EkGraph = (function(){
         cx.textAlign = "center";
 
         cx.translate(moveX * ray, moveY * ray);
+        let control = _labelPositionControl(_config.slices);
         for(i = 1; i <= _config.slices; i++){
-          let ang = i * _config.sliceAngle + (_config.sliceAngle * rotatePercent);
+          let ang = (i - control) * _config.sliceAngle + (_config.sliceAngle * rotatePercent);
           _rotate(cx, ang, ray);
           _printText(_config.labels[i-1]?_config.labels[i-1]: '');
           _rotate(cx, ang, -ray);
@@ -66,17 +66,17 @@ let EkGraph = (function(){
         cx.translate(-(moveX * ray), -(moveY * ray));
     }
 
+    // This method rotates the canvas for printing the label in tha right position.
     let _rotate = (cx, ang, ray) => {
         cx.rotate(ang);
         cx.translate(0, ray);
         cx.rotate(-ang);
     }
 
+    // This method removes the last line color printing another white line over that.
     let _hiddenLastLine = () => {
-        // const ray = _config.sizeControl * (_config.layers + 1);
         const {cx, ray } = _config;
         let clr = _config.cx.strokeStyle;
-
 
         cx.beginPath();
         cx.arc(_config.centerX, _config.centerY, ray, 0, 2 * Math.PI);
@@ -90,6 +90,25 @@ let EkGraph = (function(){
         cx.restore();
     }
 
+    // This method draw a bold line on middle 
+    let _quarterLine = () => {
+        const {cx, ray } = _config;
+        const sX = _config.centerX;
+        const sY = _config.centerY;
+        let clr = _config.cx.strokeStyle;
+        cx.strokeStyle= 'black';
+        cx.lineWidth=5;
+        for(i = 0.5; i <= 2; i += 0.5){
+            cx.beginPath();
+            cx.arc(sX, sY, ray, i, i * Math.PI);    
+            cx.lineTo(sX, sY);
+            cx.stroke();
+        }
+        cx.strokeStyle = clr;
+        cx.lineWidth = 1;
+    }
+
+    // This method draws a slice and to fill that until its level
     let _drawSlice = (slice, plusLine = 1) => {
 
         let ray = _config.sizeControl;
@@ -107,7 +126,7 @@ let EkGraph = (function(){
             cx.arc(sX, sY, ray * i, sAngle, eAngle);
             cx.lineTo(sX, sY);
             if(slice.value >= i) {
-                cx.fillStyle = _selectSliceColor(slice, i-1); //colors[i-1] || _config.defaultFillColor;
+                cx.fillStyle = _selectSliceColor(slice, i-1);
             } else {
                 cx.fillStyle = defaultColor;
             }
@@ -132,10 +151,9 @@ let EkGraph = (function(){
     }
 
     let _drawLine = (sAngle, eAngle, plusLine = 1) => {
-        //const ray = _config.sizeControl * (_config.layers + plusLine);
         const sX = _config.centerX;
         const sY = _config.centerY;
-        const { cx, ray  } = _config;
+        const { ray  } = _config;
 
         _printLine(sX, sY, ray, sAngle, eAngle, '#aaa')
         _printLine(sX, sY, ray, sAngle, eAngle);
@@ -170,11 +188,15 @@ let EkGraph = (function(){
         data = data.map((slice, idx) =>  {
             return {...slice, idx: idx + 1 }
         });
-        setLabels(data.map(item => item.label));
+        _setLabels(data.map(item => item.label));
         fillGraphData(data);
     }
 
     let _reset = () => {
+        if(_config.slices % 4 === 0 && _config.boldQuarte){
+            _quarterLine();
+            _config.cx.save();
+        }
         _hiddenLastLine();
         _config.cx.save();
         _drawLabels(_config.cx);
@@ -190,13 +212,24 @@ let EkGraph = (function(){
     }
 
     let setColors = (colors) => _config.colors = colors || [];
-    let setLabels = (labels) => _config.labels = labels || [];
+    let _setLabels = (labels) => _config.labels = labels || [];
+    
+    let _clear = () => {
+        _config.cx.clearRect(0, 0, _config.canvas.width, _config.canvas.height);
+        _draw(_config.canvas);
+    }
 
-    let drawSlice = (slice, levelToDraw) => {
-        if(!slice || slice > _config.slices) return; 
+    let drawSlice = (sliceIdx, levelToDraw) => {
+        if(!sliceIdx || sliceIdx > _config.slices) return; 
         levelToDraw = levelToDraw > _config.layers? _config.layers: levelToDraw < 0? 0: levelToDraw;
-        _drawSlice(slice, levelToDraw, 0);
+        _config.data .forEach((slice, idx) => {
+            if((idx + 1) === sliceIdx){
+                slice.value = levelToDraw;
+            }
+        });
+        _clear();
+        fillGraphData(_config.data);
     }
         
-    return { fillGraphData , initConfig , drawSlice, setColors, setLabels}  
+    return { fillGraphData , initConfig , drawSlice, setColors}  
 })();
