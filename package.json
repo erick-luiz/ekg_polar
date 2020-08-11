@@ -1,5 +1,5 @@
 {
-  "name": "ekg_polar",
+  "name": "ekchart",
   "version": "1.0.0",
   "babel": {
     "plugins": [
@@ -18,22 +18,24 @@
     "build": "babel src -d build && node minifier.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Érick lopes",
+  "author": "erick lopes",
   "license": "ISC",
   "dependencies": {
-    "@babel/cli": "^7.6.4",
     "@babel/polyfill": "^7.6.0",
-    "@babel/preset-env": "^7.6.3"
+    "@babel/preset-env": "^7.6.3",
+    "core-js": "^3.6.5",
+    "uglify-es": "github:mishoo/UglifyJS2#harmony"
   },
   "devDependencies": {
-    "minifier": "^0.8.1",
-    "@babel/core": "^7.6.4",
+    "@babel/cli": "^7.10.5",
+    "@babel/core": "^7.11.1",
     "@babel/plugin-transform-arrow-functions": "^7.2.0",
     "@babel/plugin-transform-block-scoping": "^7.6.3",
     "@babel/plugin-transform-function-name": "^7.4.4",
     "@babel/plugin-transform-modules-commonjs": "^7.6.0",
     "@babel/plugin-transform-object-super": "^7.5.5",
     "@babel/plugin-transform-shorthand-properties": "^7.2.0",
-    "@babel/plugin-transform-template-literals": "^7.4.4"
+    "@babel/plugin-transform-template-literals": "^7.4.4",
+    "minifier": "^0.8.1"
   }
 }
