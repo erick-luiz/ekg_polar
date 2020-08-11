@@ -1,7 +1,3 @@
-# _polar
-JS Polar area chart
-
-
 # EkGraph O Que é? 
 
 O EKG Polar é uma lib para tornar dinâmica e responsiva a criação do grafo polar. Exemplo: 
